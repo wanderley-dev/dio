@@ -1,0 +1,36 @@
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+func jogador(nome string, bola chan string) {
+	for {
+		// Espera receber a bola do outro jogador
+		recebido := <-bola
+		fmt.Println(nome, recebido)
+
+		// Espera um pouco para simular o processo de rebatida
+		time.Sleep(time.Second)
+
+		// Envia a bola de volta para o outro jogador
+		bola <- recebido
+	}
+}
+
+func main() {
+	// Crie um canal para a bola
+	bola := make(chan string)
+
+	// Inicie as duas goroutines para os jogadores
+	go jogador("Ping", bola)
+	go jogador("Pong", bola)
+
+	// Inicie o jogo enviando a primeira bola
+	bola <- "ping"
+
+	// Fique esperando para que o programa continue rodando
+	var input string
+	fmt.Scanln(&input)
+}
